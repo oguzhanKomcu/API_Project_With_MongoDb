@@ -81,7 +81,7 @@
 
 app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MongoDB CRUD API V1");
+         options.SwaggerEndpoint("/swagger/RestAPI/swagger.json", "RestAPI");
     });
  
 
@@ -307,7 +307,7 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
     
 ```
 
-- I apply the necessary codes in AddSwaggerGen() in program.cs so that my information and summary that will appear in my API can be seen by the developers.
+- I apply the necessary codes in AddSwaggerGen() in program.cs so that my information and summary that will appear in my API can be seen by developers. After doing this, in order to activate the "xml" file, go to the property area of my project and go to the "OutPut" field in the Build tab in the ".csproj" file. I tick "Documentation File".
 
 ```csharp
 builder.Services.AddSwaggerGen(options =>
