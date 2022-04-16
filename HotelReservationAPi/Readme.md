@@ -206,8 +206,6 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
         }
 
-
-
         /// <summary>
         /// This function lists all made reservations.
         /// </summary>
