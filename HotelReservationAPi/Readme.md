@@ -10,7 +10,7 @@
 
 - We first meet the "New Connection" page. Here we have the "ConnectionURI" address. Then I connect to MongoDB by saying "Conncect".
 
--I click on the "Databases" button on the Layout page. On the next page, I click on the "Create database" field and write my database name and the collection name. These fields and the names I will use in my Api project must be the same.
+- I click on the "Databases" button on the Layout page. On the next page, I click on the "Create database" field and write my database name and the collection name. These fields and the names I will use in my Api project must be the same.
 
 # Creating an API Project with Visual Studio 
 
@@ -98,7 +98,7 @@ app.UseSwaggerUI(options =>
  
 
 ```
--I open my "Infrastructure" folder in my project. I open my "Repositories" folder in it. First of all, I create the interface of the repository named "IReservationRepository".
+- I open my "Infrastructure" folder in my project. I open my "Repositories" folder in it. First of all, I create the interface of the repository named "IReservationRepository".
 
 ```csharp
 
@@ -123,7 +123,7 @@ app.UseSwaggerUI(options =>
 ```
 
 
--In "ReservationRepository.cs", I apply the methods necessary to do my CRUD operations in the database by inheriting from the interface. For the operations required for MongoDb in it, I use the "IMongoCollection" interface and give my carlik class, which I will operate as a type, and call my "MongoDBSettings" class that I created.
+- In "ReservationRepository.cs", I apply the methods necessary to do my CRUD operations in the database by inheriting from the interface. For the operations required for MongoDb in it, I use the "IMongoCollection" interface and give my carlik class, which I will operate as a type, and call my "MongoDBSettings" class that I created.
 
 ```csharp
 
@@ -338,6 +338,6 @@ builder.Services.AddSwaggerGen(options =>
 ```
 - I am running my project to test .SwaggerUI view is coming . The methods I wrote here are displayed separately thanks to swagger. I run my methods by giving the desired parameters.
 
-<img src="https://user-images.githubusercontent.com/96787308/163675939-4083b9c1-b5eb-422e-afc4-2a50017ac592.png" width="800" height="500">   
+<img src="https://user-images.githubusercontent.com/96787308/163675939-4083b9c1-b5eb-422e-afc4-2a50017ac592.png" width="900" height="500">   
 
 
