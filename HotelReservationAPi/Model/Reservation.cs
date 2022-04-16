@@ -22,10 +22,6 @@ namespace HotelReservationAPi.Model
         public string? Customer_Phone { get; set; }
         public string? Customer_City { get; set; }
 
-        
-        
-
-
 
     }
 }

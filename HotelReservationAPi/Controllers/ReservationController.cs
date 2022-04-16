@@ -17,12 +17,26 @@ namespace HotelReservationAPi.Controllers
 
         }
 
+
+
+        /// <summary>
+        /// This function lists all made reservations.
+        /// </summary>
+        /// <param"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(_reservationRepository.GetCustomers());
+            return Ok(await _reservationRepository.GetCustomers().ConfigureAwait(false));
         }
 
+
+
+        /// <summary>
+        /// This function returns the reservation whose "id" is given.
+        /// </summary>
+        /// <param name="id">It is a required area and so type is int</param>
+        /// <returns>If function is succeded will be return Ok, than will be return NotFound</returns>
         [HttpGet("{id:length(24)}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -39,19 +53,29 @@ namespace HotelReservationAPi.Controllers
 
         }
 
+        /// <summary>
+        /// You can add a new reservation using this method.
+        /// </summary>
+        /// <param></param>
+        /// <returns>If function is succeded will be return CreatedAtAction, than will be return Bad Request</returns>        
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Reservation customer)
         {
-            //if (customer is null)
-            //{
-            //    return BadRequest();
-            //}
+            if (customer is null)
+            {
+               return BadRequest();
+            }
 
             await _reservationRepository.Create(customer);
 
             return CreatedAtAction(nameof(GetById), new { id = customer.Id }, customer);
         }
 
+        /// <summary>
+        /// Using this method, you can edit and update the reservation whose "id" is specified.
+        /// </summary>
+        /// <param name="id">It is a required area and so type is int</param>
+        /// <returns>If function is succeded will be return NoContent, than will be return Bad Request</returns>
         [HttpPut("{id:length(24)}")]
         public async Task<IActionResult> Update(string id, [FromBody] Reservation customer)
         {
@@ -66,6 +90,12 @@ namespace HotelReservationAPi.Controllers
             return NoContent();
         }
 
+
+        /// <summary>
+        /// This function can remove your reservation. 
+        /// </summary>
+        /// <param name="id">It is a required area and so type is int</param>
+        /// <returns>If function is succeded will be return NoContent, than will be return NotFound</returns>        
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> Delete(string id)
         {
