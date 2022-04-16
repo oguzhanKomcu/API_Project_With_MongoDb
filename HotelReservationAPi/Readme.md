@@ -187,3 +187,4 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
 ```
 
+- Now it's time to create my API. For this, I add an ApiController in the "Controller" folder. I name it "ReservationController" like this. In it, I apply DI to use my methods in my repository, in the constructor method of my controller, that I want an object that uses the "IReservationRepository" interface.
