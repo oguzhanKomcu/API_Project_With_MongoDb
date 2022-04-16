@@ -188,3 +188,157 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 ```
 
 - Now it's time to create my API. For this, I add an ApiController in the "Controller" folder. I name it "ReservationController" like this. In it, I apply DI to use my methods in my repository, in the constructor method of my controller, that I want an object that uses the "IReservationRepository" interface.
+
+- Later, I apply the "Http" methods required for developers who will use this api. I also include summaries of my texts so that developers can more easily understand which processes these methods are used for.
+
+
+```csharp
+
+ [Route("api/[controller]")]
+    [ApiController]
+    public class ReservationsController : ControllerBase
+    {
+        private readonly IReservationRepository _reservationRepository;
+
+        public ReservationsController(IReservationRepository reservationRepository)
+        {
+            _reservationRepository = reservationRepository;
+
+        }
+
+        /// <summary>
+        /// This function lists all made reservations.
+        /// </summary>
+        /// <param"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            return Ok(await _reservationRepository.GetCustomers().ConfigureAwait(false));
+        }
+```
+```csharp
+
+        /// <summary>
+        /// This function returns the reservation whose "id" is given.
+        /// </summary>
+        /// <param name="id">It is a required area and so type is int</param>
+        /// <returns>If function is succeded will be return Ok, than will be return NotFound</returns>
+        [HttpGet("{id:length(24)}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var customer = await _reservationRepository.GetCustomer(id);
+
+            if (customer is null)
+            {
+                return NotFound();
+            }
+
+
+            return Ok(customer);
+
+
+        }
+```
+
+```csharp
+        /// <summary>
+        /// You can add a new reservation using this method.
+        /// </summary>
+        /// <param></param>
+        /// <returns>If function is succeded will be return CreatedAtAction, than will be return Bad Request</returns>        
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Reservation customer)
+        {
+            if (customer is null)
+            {
+               return BadRequest();
+            }
+
+            await _reservationRepository.Create(customer);
+
+            return CreatedAtAction(nameof(GetById), new { id = customer.Id }, customer);
+        }
+```
+
+```csharp
+        /// <summary>
+        /// Using this method, you can edit and update the reservation whose "id" is specified.
+        /// </summary>
+        /// <param name="id">It is a required area and so type is int</param>
+        /// <returns>If function is succeded will be return NoContent, than will be return Bad Request</returns>
+        [HttpPut("{id:length(24)}")]
+        public async Task<IActionResult> Update(string id, [FromBody] Reservation customer)
+        {
+            var existingCustomer = await _reservationRepository.GetCustomer(id);
+            if (existingCustomer is null)
+            {
+                return BadRequest();
+            }
+
+            await _reservationRepository.Update(id, customer);
+
+            return NoContent();
+        }
+```
+
+```csharp
+
+        /// <summary>
+        /// This function can remove your reservation. 
+        /// </summary>
+        /// <param name="id">It is a required area and so type is int</param>
+        /// <returns>If function is succeded will be return NoContent, than will be return NotFound</returns>        
+        [HttpDelete("{id:length(24)}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var customer = await _reservationRepository.GetCustomer(id);
+
+            if (customer is null)
+            {
+                return NotFound();
+            }
+
+            await _reservationRepository.Delete(customer.Id);
+
+            return NoContent();
+        }
+    }
+    
+```
+
+- I apply the necessary codes in AddSwaggerGen() in program.cs so that my information and summary that will appear in my API can be seen by the developers.
+
+```csharp
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("RestAPI", new OpenApiInfo()
+    {
+        Title = "RestFul API",
+        Version = "v1",
+        Description = "Hotel Reservation RestFul API",
+        Contact = new OpenApiContact()
+        {
+            Email = "komcuoguzz@gmail.com",
+            Name = "Oğuzhan Kömcü",
+            Url = new Uri("https://github.com/oguzhanKomcu")
+        },
+        License = new OpenApiLicense()
+        {
+            Name = "MIT License",
+            Url = new Uri("http://opensource.org/licenses/MIT")
+        }
+    });
+
+   
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
+    
+```
+- I am running my project to test .SwaggerUI view is coming . The methods I wrote here are displayed separately thanks to swagger. I run my methods by giving the desired parameters.
+
+<img src="https://www.seattlevfp.org/wp-content/uploads/2020/11/entityframeworklogo-white-bg.jpg" width="300" height="250">   
+
+
