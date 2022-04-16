@@ -33,11 +33,9 @@ MongoDB is a completely open source database management system tool that has not
 
 API key is used to monitor how application programming interfaces are used and to reduce misuse. The API key is the code structure that consists of user data and is transmitted during the interface call. It is the interface that enables the functions of an application to be accessed and used externally or remotely. API is a software tool that allows two applications to communicate with each other. API allows any server to return a response and access the application on the server from different platforms. It does not matter in which language the program used is written. Because the data captured using the Api is converted into a common JSON document.
 
-If we give an example of API usage;
-
-ATMs learn the remaining amount in our account through APIs connected to banks all over the world. The ATM program that withdraws money from Istanbul immediately contacts your bank in London, deducts the amount to be withdrawn from your balance and transfers it to the ATM company. In this way, you will have access to your money.
+If we give an example of API usage; ATMs learn the remaining amount in our account through APIs connected to banks all over the world. The ATM program that withdraws money from Istanbul immediately contacts your bank in London, deducts the amount to be withdrawn from your balance and transfers it to the ATM company. In this way, you will have access to your money.
 
 APIs are of great importance for e-commerce sites. Because e-commerce sites have many functions and each of these functions may have a different service infrastructure. Without application programming interfaces, accessing these functions is very difficult. E-commerce sites need APIs for many processes such as adding products, receiving orders and payments, calculating cargo, e-invoice and accounting.
 
-
+Big technology companies provide many advantages in software development as they allow their technologies to be used via API. API is a powerful tool that can help you speed up your business, increase your brand's reach, connect your shoppers to the products they want, and much more. Thanks to the API, software development has become easier.
 
