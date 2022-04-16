@@ -216,8 +216,8 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
         {
             return Ok(await _reservationRepository.GetCustomers().ConfigureAwait(false));
         }
-
-
+```
+```csharp
 
         /// <summary>
         /// This function returns the reservation whose "id" is given.
@@ -239,7 +239,9 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
 
         }
+```
 
+```csharp
         /// <summary>
         /// You can add a new reservation using this method.
         /// </summary>
@@ -257,7 +259,9 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
             return CreatedAtAction(nameof(GetById), new { id = customer.Id }, customer);
         }
+```
 
+```csharp
         /// <summary>
         /// Using this method, you can edit and update the reservation whose "id" is specified.
         /// </summary>
@@ -276,7 +280,9 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
             return NoContent();
         }
+```
 
+```csharp
 
         /// <summary>
         /// This function can remove your reservation. 
@@ -298,7 +304,6 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
             return NoContent();
         }
     }
- 
-
+    
 ```
 
