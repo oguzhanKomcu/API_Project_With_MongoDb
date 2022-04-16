@@ -37,7 +37,7 @@ If we give an example of API usage;
 
 ATMs learn the remaining amount in our account through APIs connected to banks all over the world. The ATM program that withdraws money from Istanbul immediately contacts your bank in London, deducts the amount to be withdrawn from your balance and transfers it to the ATM company. In this way, you will have access to your money.
 
-
+APIs are of great importance for e-commerce sites. Because e-commerce sites have many functions and each of these functions may have a different service infrastructure. Without application programming interfaces, accessing these functions is very difficult. E-commerce sites need APIs for many processes such as adding products, receiving orders and payments, calculating cargo, e-invoice and accounting.
 
 
 
