@@ -338,6 +338,6 @@ builder.Services.AddSwaggerGen(options =>
 ```
 - I am running my project to test .SwaggerUI view is coming . The methods I wrote here are displayed separately thanks to swagger. I run my methods by giving the desired parameters.
 
-<img src="https://user-images.githubusercontent.com/96787308/163675821-68e03b68-5292-4c43-b609-85004c7d4d9d.png" width="600" height="400">   
+<img src="https://user-images.githubusercontent.com/96787308/163675939-4083b9c1-b5eb-422e-afc4-2a50017ac592.png" width="800" height="500">   
 
 
