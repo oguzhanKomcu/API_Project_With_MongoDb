@@ -307,3 +307,38 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
     
 ```
 
+- I apply the necessary codes in AddSwaggerGen() in program.cs so that my information and summary that will appear in my API can be seen by the developers.
+
+```csharp
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("RestAPI", new OpenApiInfo()
+    {
+        Title = "RestFul API",
+        Version = "v1",
+        Description = "Hotel Reservation RestFul API",
+        Contact = new OpenApiContact()
+        {
+            Email = "komcuoguzz@gmail.com",
+            Name = "Oğuzhan Kömcü",
+            Url = new Uri("https://github.com/oguzhanKomcu")
+        },
+        License = new OpenApiLicense()
+        {
+            Name = "MIT License",
+            Url = new Uri("http://opensource.org/licenses/MIT")
+        }
+    });
+
+   
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
+    
+```
+- I am running my project to test .SwaggerUI view is coming . The methods I wrote here are displayed separately thanks to swagger. I run my methods by giving the desired parameters.
+
+<img src="https://www.seattlevfp.org/wp-content/uploads/2020/11/entityframeworklogo-white-bg.jpg" width="300" height="250">   
+
+
