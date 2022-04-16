@@ -209,7 +209,6 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
         /// <summary>
         /// This function lists all made reservations.
         /// </summary>
-        /// <param"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -339,6 +338,6 @@ builder.Services.AddSwaggerGen(options =>
 ```
 - I am running my project to test .SwaggerUI view is coming . The methods I wrote here are displayed separately thanks to swagger. I run my methods by giving the desired parameters.
 
-<img src="https://www.seattlevfp.org/wp-content/uploads/2020/11/entityframeworklogo-white-bg.jpg" width="300" height="250">   
+<img src="https://user-images.githubusercontent.com/96787308/163675821-68e03b68-5292-4c43-b609-85004c7d4d9d.png" width="600" height="400">   
 
 
