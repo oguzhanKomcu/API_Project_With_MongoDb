@@ -175,3 +175,15 @@ app.UseSwaggerUI(options =>
  
 
 ```
+
+
+- Then I go back to Program.cs and resolve my repository in my IOC container, which I resolve in my container as it will be used in my "MongoDbSettings" class.
+
+```csharp
+
+builder.Services.AddSingleton<MongoDbSettings>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+ 
+
+```
+
