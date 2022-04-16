@@ -74,3 +74,104 @@
   }
 
 ```
+- One of the most important needs in Web API development is the need for documentation. Because what the API methods do and how they are used should be clear in the documentation. For this, I use the interface of "SWAGGER", which is now embedded with the CORE 6 version. An important purpose of Swagger is to provide an interface for RestApi. This allows both people and computers to see, examine and understand the features of RestApi without accessing the source code. I came to my Program.cs class and did the necessary action for SwaggerUI.
+
+
+```csharp
+
+app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MongoDB CRUD API V1");
+    });
+ 
+
+```
+
+- Now I am doing my methods and injection operations that are necessary to do my CRUD operations in the database.
+
+```csharp
+
+app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MongoDB CRUD API V1");
+    });
+ 
+
+```
+-I open my "Infrastructure" folder in my project. I open my "Repositories" folder in it. First of all, I create the interface of the repository named "IReservationRepository".
+
+```csharp
+
+ public interface IReservationRepository
+    {
+        Task<List<Reservation>> GetCustomers();
+
+
+        Task<Reservation> GetCustomer(string id);
+
+
+        Task<Reservation> Create(Reservation customer);
+
+
+        Task Update(string id, Reservation customer);
+
+
+        Task Delete(string id);
+    }
+ 
+
+```
+
+
+-In "ReservationRepository.cs", I apply the methods necessary to do my CRUD operations in the database by inheriting from the interface. For the operations required for MongoDb in it, I use the "IMongoCollection" interface and give my carlik class, which I will operate as a type, and call my "MongoDBSettings" class that I created.
+
+```csharp
+
+ public class ReservationRepository : IReservationRepository
+    {
+        private readonly IMongoCollection<Reservation> _reservation;
+        private readonly MongoDbSettings _settings;
+
+
+        public ReservationRepository(IOptions<MongoDbSettings> mongoDBSettings)
+        {
+            _settings = mongoDBSettings.Value;
+            var client = new MongoClient(_settings.ConnectionString);
+            var database = client.GetDatabase(_settings.DatabaseName);
+            _reservation = database.GetCollection<Reservation>(_settings.CollectionName);
+        }
+
+
+        public async Task<List<Reservation>> GetCustomers()
+        {
+
+            return await _reservation.Find(customer => true).ToListAsync();
+        }
+
+        public async Task<Reservation> GetCustomer(string id)
+        {
+            return await _reservation.Find(x => x.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<Reservation> Create(Reservation customer)
+        {
+            await _reservation.InsertOneAsync(customer);
+            return customer;
+
+        }
+
+        public async Task Update(string id, Reservation customer)
+        {
+            await _reservation.ReplaceOneAsync(x => x.Id == id, customer);
+
+        }
+
+        public async Task Delete(string id)
+        {
+
+            await _reservation.DeleteOneAsync(x => x.Id == id);
+
+        }
+ 
+
+```
