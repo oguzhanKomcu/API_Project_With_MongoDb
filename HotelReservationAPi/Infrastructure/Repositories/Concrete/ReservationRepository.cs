@@ -1,4 +1,5 @@
 ﻿using HotelReservationAPi.Model;
+using HotelReservationAPi.Model.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 

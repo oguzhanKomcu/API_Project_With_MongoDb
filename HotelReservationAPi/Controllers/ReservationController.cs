@@ -1,16 +1,21 @@
 ﻿using HotelReservationAPi.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using HotelReservationAPi.Model;
+using HotelReservationAPi.Model.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservationAPi.Controllers
 {
+    [Authorize] 
     [Route("api/[controller]")]
     [ApiController]
     public class ReservationsController : ControllerBase
     {
         private readonly IReservationRepository _reservationRepository;
 
+
+
+        
         public ReservationsController(IReservationRepository reservationRepository)
         {
             _reservationRepository = reservationRepository;
@@ -19,10 +24,12 @@ namespace HotelReservationAPi.Controllers
 
 
 
+
+
+
         /// <summary>
         /// This function lists all made reservations.
         /// </summary>
-        /// <param"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get()

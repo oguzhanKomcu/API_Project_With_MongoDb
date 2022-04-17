@@ -1,13 +1,10 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace HotelReservationAPi.Model
+namespace HotelReservationAPi.Model.Entities
 {
-    public class Reservation
+    public class Reservation :BaseEntity
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
         
 
         public string? Reservation_Date { get; set; }

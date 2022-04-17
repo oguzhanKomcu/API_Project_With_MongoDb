@@ -1,4 +1,5 @@
 ﻿using HotelReservationAPi.Model;
+using HotelReservationAPi.Model.Entities;
 
 namespace HotelReservationAPi.Infrastructure.Repositories
 {
