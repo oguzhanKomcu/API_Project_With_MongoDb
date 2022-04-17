@@ -20,7 +20,58 @@
 
 - To use MongoDB features, I download "MongoDB.Driver" library from Nuget Package. So I can use MongoDb classes and methods.
 
-- I am creating my class named "Reservation.cs" for my entity that I will create inside the model folder. I create my fields that I will use in my collection. Here I am applying the attribute indicating that my Id type is "BsonType.ObjectId".
+- In the Model folder, I create my class named "Reservation.cs" , "User.cs" and my main entity "BaseEntity.cs" that inherits them. I create the fields that I will use in my collection myself. Here I am applying the attribute indicating that my identity type is "BsonType.ObjectId"
+
+
+ ```csharp
+   public class BaseEntity
+    {
+
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+
+        private DateTime _createDate = DateTime.Now;
+
+        public DateTime CreateDate
+        { get { return _createDate; } set { _createDate = value; } }
+
+        public DateTime? UpdateDate { get; set; }
+        public DateTime? DeleteDate { get; set; }
+
+        private Status _status = Status.Active;
+        public Status Status
+        {
+            get { return _status; }
+            set { _status = value; }
+        }
+    }
+```
+- I'm creating an enum type "Status.cs" class to determine the status states of my entity.
+-
+ ```csharp
+   public class Reservation
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+
+        public string? Reservation_Date { get; set; }
+
+        public string? Entry_Date { get; set; }
+        public string? Exit_Date { get; set; }
+        public string? Room_Number { get; set; }
+        public string? Room_Type { get; set; }
+        public string? Room_Price { get; set; }
+        public string? Customer_Name { get; set; }
+        public string? Customer_Email { get; set; }
+        public string? Customer_Phone { get; set; }
+        public string? Customer_City { get; set; }
+
+
+    }
+```
 
  ```csharp
    public class Reservation
@@ -46,7 +97,20 @@
     }
 ```
 
-- I create the class "MongoDBSettings.cs" inside the model folder. This class will be used to store the property values of the file "appsettings.json". The important thing here is that the JSON and C# property names must be the same.
+ ```csharp
+  public class User : BaseEntity
+    {
+        [BsonElement("userName")]
+        public string UserName { get; set; }
+
+        [BsonElement("password")]
+
+        public string Password { get; set; }
+
+    }
+```
+
+- Inside the model folder I create the class "MongoDBSettings.cs". This class will be used to store property values of "appsettings.json" file. The important thing here is that the JSON and C# property names must be the same. I created my "key" property that I will use for the jwt token in this class.
 
 ```csharp
   public class MongoDbSettings
@@ -54,6 +118,7 @@
         public string ConnectionString { get; set; } = string.Empty;
         public string DatabaseName { get; set; } = string.Empty;
         public string CollectionName { get; set; } = string.Empty;
+        public string? SecretKey { get; set; }
 
     }
 ```
@@ -91,10 +156,14 @@ app.UseSwaggerUI(options =>
 
 ```csharp
 
-app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MongoDB CRUD API V1");
-    });
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDBConnection"));
+builder.Services.AddSingleton<MongoDbSettings>(options => options.GetRequiredService<IOptions<MongoDbSettings>>().Value);
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddControllers();
  
 
 ```
@@ -175,7 +244,20 @@ app.UseSwaggerUI(options =>
  
 
 ```
+- I want to enable access to my methods in my API, which I will create in my project, only for registered ones. I have already created a User class for this. Here, the user will first register, and then I will give access to the "JWT Token" that he will receive in the next "Login" operation. first i created it on an interfaceface.
 
+```csharp
+ public interface IUserRepository
+    {
+        string Authentication(string userName, string password);
+        Task<User> Register(User user);
+        Task<User> GetUser(string userName);
+
+        Task<List<User>> GetUsers();
+    }
+ 
+
+```
 
 - Then I go back to Program.cs and resolve my repository in my IOC container, which I resolve in my container as it will be used in my "MongoDbSettings" class.
 
