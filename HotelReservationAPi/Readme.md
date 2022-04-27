@@ -703,4 +703,12 @@ builder.Services.AddSwaggerGen(options =>
 
 Now let's see how it is tested.I first got all the users by making a get list and copied their id.Then I entered my username and password in the "POST/api/User/authenticate" and got my token.
 
-<img src="https://user-images.githubusercontent.com/96787308/165599747-e47a3e61-cfab-41cf-a81e-974f85d6403e.png" width="700" height="500">
+<img src="https://user-images.githubusercontent.com/96787308/165599747-e47a3e61-cfab-41cf-a81e-974f85d6403e.png" width="900" height="400">
+
+<img src="https://user-images.githubusercontent.com/96787308/165600835-20fd561f-67a3-4204-8747-159be73a76f6.png" width="900" height="400">
+
+After that, I click on the "Authorize" button and enter my token so that "Bearer" appears at the beginning.
+
+<img src="https://user-images.githubusercontent.com/96787308/165601351-33d5253f-7955-459d-8055-1cb3676c1957.png" width="900" height="400">
+
+
