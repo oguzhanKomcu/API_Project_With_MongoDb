@@ -39,13 +39,14 @@ builder.Services.AddSwaggerGen(options =>
             Url = new Uri("http://opensource.org/licenses/MIT")
         }
     });
-    options.AddSecurityDefinition("JWT", new OpenApiSecurityScheme() //üretilen token için yazdýk.
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() //üretilen token için yazdýk.
     {
         Description = "JWT Authentication header using token",
-        Name = "Authentication",
+        Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "JWT"
+        Scheme = "Bearer",
+        
     });    
     options.AddSecurityRequirement(new OpenApiSecurityRequirement()
       {
@@ -55,10 +56,10 @@ builder.Services.AddSwaggerGen(options =>
             Reference = new OpenApiReference
               {
                 Type = ReferenceType.SecurityScheme,
-                Id = "JWT"
+                Id = "Bearer"
               },
-              Scheme = "JWT",
-              Name = "JWT",
+              Scheme = "Bearer",
+              Name = "Bearer",
               In = ParameterLocation.Header,
 
             },
@@ -81,7 +82,7 @@ builder.Services.AddAuthentication( x=>
     x.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("SecretKey").Value)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JwtKey").ToString())),
         ValidateIssuer = false,
         ValidateAudience = false
     };
@@ -99,6 +100,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

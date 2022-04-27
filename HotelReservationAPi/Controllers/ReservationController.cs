@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservationAPi.Controllers
 {
-    [Authorize] 
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReservationsController : ControllerBase
@@ -42,7 +42,7 @@ namespace HotelReservationAPi.Controllers
         /// <summary>
         /// This function returns the reservation whose "id" is given.
         /// </summary>
-        /// <param name="id">It is a required area and so type is int</param>
+        /// <param name="id">It is a required area and so type is string</param>
         /// <returns>If function is succeded will be return Ok, than will be return NotFound</returns>
         [HttpGet("{id:length(24)}")]
         public async Task<IActionResult> GetById(string id)

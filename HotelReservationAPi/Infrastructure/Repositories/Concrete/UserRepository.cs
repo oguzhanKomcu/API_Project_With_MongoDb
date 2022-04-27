@@ -14,7 +14,7 @@ namespace HotelReservationAPi.Infrastructure.Repositories.Concrete
     {
          private readonly IMongoCollection<User> _user;
         private readonly MongoDbSettings _settings;
-        private readonly string _key;
+        
 
         public UserRepository(IOptions<MongoDbSettings> mongoDBSettings, IConfiguration configuration)
         {
@@ -22,7 +22,7 @@ namespace HotelReservationAPi.Infrastructure.Repositories.Concrete
             var client = new MongoClient(_settings.ConnectionString);
             var database = client.GetDatabase(_settings.DatabaseName);
             _user = database.GetCollection<User>("ConnectionName2");
-            _key = configuration.GetSection("JwtKey").ToString();
+            _settings.SecretKey = configuration.GetSection("JwtKey").ToString();
         }
 
         public async Task<List<User>> GetUsers()
@@ -42,7 +42,7 @@ namespace HotelReservationAPi.Infrastructure.Repositories.Concrete
             else
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var tokenkey = Encoding.ASCII.GetBytes(_key);
+                var tokenkey = Encoding.ASCII.GetBytes(_settings.SecretKey );
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]

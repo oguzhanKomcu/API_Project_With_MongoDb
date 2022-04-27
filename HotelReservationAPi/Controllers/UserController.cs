@@ -21,19 +21,21 @@ namespace HotelReservationAPi.Controllers
         }
         
         
-        [AllowAnonymous]
+        
         [Route("authenticate")]
         [HttpPost]
-        public IActionResult Login([FromBody] User model)
+        public IActionResult Login([FromBody] User user)
         {
-            var user = _userRepository.Authentication(model.UserName, model.Password);
+            var token = _userRepository.Authentication(user.UserName, user.Password);
             if (user == null)
             {
                 return Unauthorized();
             }
-            return Ok(new { user, model});
+            return Ok(new { token, user });
  
         }
+
+
 
         /// <summary>
         /// This function lists all made user.
@@ -45,6 +47,12 @@ namespace HotelReservationAPi.Controllers
             return Ok(await _userRepository.GetUsers().ConfigureAwait(false));
         }
 
+        /// <summary>
+        /// This function returns the user whose "id" is given.
+        /// </summary>
+        /// <param name="id">It is a required area and so type is string</param>
+        /// <returns>If function is succeded will be return Ok, than will be return NotFound</returns>
+
         [HttpGet("{id:length(24)}")]
         public  ActionResult<User> GetUser(string id)
         {
@@ -55,7 +63,11 @@ namespace HotelReservationAPi.Controllers
             }
             return Ok(user);
         }
-        
+
+        /// <summary>
+        /// You can add a new user using this method.
+        /// </summary>
+        /// <returns>If function is succeded will be return CreatedAtAction, than will be return Bad Request</returns>    
         [HttpPost("Register") ]
         public async Task<IActionResult> Register([FromBody] User user)
         {
