@@ -20,7 +20,58 @@
 
 - To use MongoDB features, I download "MongoDB.Driver" library from Nuget Package. So I can use MongoDb classes and methods.
 
-- I am creating my class named "Reservation.cs" for my entity that I will create inside the model folder. I create my fields that I will use in my collection. Here I am applying the attribute indicating that my Id type is "BsonType.ObjectId".
+- In the Model folder, I create my class named "Reservation.cs" , "User.cs" and my main entity "BaseEntity.cs" that inherits them. I create the fields that I will use in my collection myself. Here I am applying the attribute indicating that my identity type is "BsonType.ObjectId"
+
+
+ ```csharp
+   public class BaseEntity
+    {
+
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+
+        private DateTime _createDate = DateTime.Now;
+
+        public DateTime CreateDate
+        { get { return _createDate; } set { _createDate = value; } }
+
+        public DateTime? UpdateDate { get; set; }
+        public DateTime? DeleteDate { get; set; }
+
+        private Status _status = Status.Active;
+        public Status Status
+        {
+            get { return _status; }
+            set { _status = value; }
+        }
+    }
+```
+- I'm creating an enum type "Status.cs" class to determine the status states of my entity.
+-
+ ```csharp
+   public class Reservation
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+
+        public string? Reservation_Date { get; set; }
+
+        public string? Entry_Date { get; set; }
+        public string? Exit_Date { get; set; }
+        public string? Room_Number { get; set; }
+        public string? Room_Type { get; set; }
+        public string? Room_Price { get; set; }
+        public string? Customer_Name { get; set; }
+        public string? Customer_Email { get; set; }
+        public string? Customer_Phone { get; set; }
+        public string? Customer_City { get; set; }
+
+
+    }
+```
 
  ```csharp
    public class Reservation
@@ -46,7 +97,20 @@
     }
 ```
 
-- I create the class "MongoDBSettings.cs" inside the model folder. This class will be used to store the property values of the file "appsettings.json". The important thing here is that the JSON and C# property names must be the same.
+ ```csharp
+  public class User : BaseEntity
+    {
+        [BsonElement("userName")]
+        public string UserName { get; set; }
+
+        [BsonElement("password")]
+
+        public string Password { get; set; }
+
+    }
+```
+
+- Inside the model folder I create the class "MongoDBSettings.cs". This class will be used to store property values of "appsettings.json" file. The important thing here is that the JSON and C# property names must be the same. I created my "key" property that I will use for the jwt token in this class.
 
 ```csharp
   public class MongoDbSettings
@@ -54,6 +118,7 @@
         public string ConnectionString { get; set; } = string.Empty;
         public string DatabaseName { get; set; } = string.Empty;
         public string CollectionName { get; set; } = string.Empty;
+        public string? SecretKey { get; set; }
 
     }
 ```
@@ -91,10 +156,13 @@ app.UseSwaggerUI(options =>
 
 ```csharp
 
-app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MongoDB CRUD API V1");
-    });
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDBConnection"));
+builder.Services.AddSingleton<MongoDbSettings>(options => options.GetRequiredService<IOptions<MongoDbSettings>>().Value);
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddControllers();
  
 
 ```
@@ -340,4 +408,309 @@ builder.Services.AddSwaggerGen(options =>
 
 <img src="https://user-images.githubusercontent.com/96787308/163675939-4083b9c1-b5eb-422e-afc4-2a50017ac592.png" width="900" height="500">   
 
+- I want to enable access to my methods in my API, which I will create in my project, only for registered ones. I have already created a User class for this. Here, the user will first register, and then I will give access to the "JWT Token" that he will receive in the next "Login" operation. first i created it on an interfaceface.
 
+```csharp
+ public interface IUserRepository
+    {
+        string Authentication(string userName, string password);
+        Task<User> Register(User user);
+        Task<User> GetUser(string userName);
+
+        Task<List<User>> GetUsers();
+    }
+ 
+
+```
+
+- I install these packages before starting the process for authentication.
+
+- Microsoft.AspNetCore.Authentication 
+- Microsoft.AspNetCore.Authentication.JwtBearer
+- System.IdentityModel.Tokens.Jwt
+
+
+- Now I create a "UserRepository.cs" class and apply the necessary "Crud" operations for registration.
+
+```csharp
+    public class UserRepository : IUserRepository
+    {
+         private readonly IMongoCollection<User> _user;
+        private readonly MongoDbSettings _settings;
+        
+
+        public UserRepository(IOptions<MongoDbSettings> mongoDBSettings, IConfiguration configuration)
+        {
+            _settings = mongoDBSettings.Value;
+            var client = new MongoClient(_settings.ConnectionString);
+            var database = client.GetDatabase(_settings.DatabaseName);
+            _user = database.GetCollection<User>("ConnectionName2"); // Here I specify the path of my "User" document and 
+             // its field in the "appsettings.json" document, which I named "ConnectionName2".
+             // Otherwise, my "Users" document cannot be found.
+            _settings.SecretKey = configuration.GetSection("JwtKey").ToString(); // Here in the "appsettings.json" document,
+            // specify the field that I keep for the jwt token.
+        }
+
+        public async Task<List<User>> GetUsers()
+        {
+
+            return await _user.Find(user => true).ToListAsync();
+        }
+
+        public string Authentication(string userName, string password) // Upon login, an Authentication key will be set
+                                                                       // and its duration will be within the specified time.
+        {
+            var user = _user.Find(x => x.UserName == userName && x.Password == password).FirstOrDefault();
+            if (user == null)
+            {
+                return null;
+                
+            }
+            else
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenkey = Encoding.ASCII.GetBytes(_settings.SecretKey );
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(ClaimTypes.Name, user.UserName)
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenkey), SecurityAlgorithms.HmacSha256Signature)
+                };
+
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+
+            }
+ 
+        }
+
+        public async Task<User> GetUser(string userName)
+        {
+            return  await _user.Find<User>(User => User.UserName == userName).FirstOrDefaultAsync();
+        }
+
+        public async Task<User> Register(User user)
+        {
+            await _user.InsertOneAsync(user);
+            return user;
+
+        }
+ 
+
+```
+- Now I go and do the resolve in my "Program.cs" class.
+
+```csharp
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+ 
+```
+
+- Now we need to configure our Jwt Authentication in program.cs as follows.
+
+
+```csharp
+builder.Services.AddAuthentication( x=>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JwtKey").ToString())),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+- Now to be able to use any type of Authentication we need to enable it in our project. For this I added app.UseAuthentication() and app.UseAuthorization() method in program.cs.
+
+```csharp
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+```
+- Configuration.GetSection(“JwtKey”) the key I'm using here comes from the value in appsettings.json. I went and added this to my json file.
+
+  
+
+```csharp
+  
+ "AllowedHosts": "*",
+  "MongoDBConnection": {
+    "ConnectionString": "mongodb://localhost:27017",
+    "DatabaseName": "HotelReservationDB",
+    "CollectionName": "Resevations",
+    "ConnectionName2": "Users"
+  },
+
+  "JwtKey": "This usedto sing in and verification jwt token"
+
+```
+- For Swagger UI to carry Json Web Tokens (JWT) in authorized APIs, authorization must be configured. This is how we add the security schema to the dependency container. 
+
+  
+```csharp
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("RestAPI", new OpenApiInfo()
+    {
+        Title = "RestFul API",
+        Version = "v1",
+        Description = "Hotel Reservation RestFul API",
+        Contact = new OpenApiContact()
+        {
+            Email = "komcuoguzz@gmail.com",
+            Name = "Oğuzhan Kömcü",
+            Url = new Uri("https://github.com/oguzhanKomcu")
+        },
+        License = new OpenApiLicense()
+        {
+            Name = "MIT License",
+            Url = new Uri("http://opensource.org/licenses/MIT")
+        }
+    });
+  options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() 
+    {
+        Description = "JWT Authentication header using token",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        
+    });    
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+      {
+        {
+          new OpenApiSecurityScheme
+          {
+            Reference = new OpenApiReference
+              {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+              },
+              Scheme = "Bearer",
+              Name = "Bearer",
+              In = ParameterLocation.Header,
+
+            },
+            new List<string>()
+          }
+        });
+
+
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+ });
+
+```
+- Now I have created a "UserController" api in my "Controler" folder.
+
+```csharp
+ [Route("api/[controller]")]
+    [ApiController]
+    public class UserController : ControllerBase
+    {
+
+        private readonly IUserRepository _userRepository;
+
+        public UserController(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+        
+        
+        
+        [Route("authenticate")]
+        [HttpPost]
+        public IActionResult Login([FromBody] User user)
+        {
+           var token = _userRepository.Authentication(user.UserName, user.Password); //For the verification token to be generated when login
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(new { token, user });
+ 
+        }
+
+
+
+        /// <summary>
+        /// This function lists all made user.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetUsers()
+        {
+            return Ok(await _userRepository.GetUsers().ConfigureAwait(false));
+        }
+
+        /// <summary>
+        /// This function returns the user whose "id" is given.
+        /// </summary>
+        /// <param name="id">It is a required area and so type is string</param>
+        /// <returns>If function is succeded will be return Ok, than will be return NotFound</returns>
+
+        [HttpGet("{id:length(24)}")]
+        public  ActionResult<User> GetUser(string id)
+        {
+            var user =  _userRepository.GetUser(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
+        /// <summary>
+        /// You can add a new user using this method.
+        /// </summary>
+        /// <returns>If function is succeded will be return CreatedAtAction, than will be return Bad Request</returns>    
+        [HttpPost("Register") ]
+        public async Task<IActionResult> Register([FromBody] User user)
+        {
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            await _userRepository.Register(user);
+
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+        }
+
+    }
+
+```
+
+- Now I add [Authorize] atributte per my "ReservationsController" controller so that unregistered and expired users cannot access my Resevation methods.
+
+```csharp
+    [Authorize]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ReservationsController : ControllerBase
+
+```
+
+Now let's see how it is tested.I first got all the users by making a get list and copied their id.Then I entered my username and password in the "POST/api/User/authenticate" and got my token.
+
+<img src="https://user-images.githubusercontent.com/96787308/165599747-e47a3e61-cfab-41cf-a81e-974f85d6403e.png" width="900" height="400">
+
+<img src="https://user-images.githubusercontent.com/96787308/165600835-20fd561f-67a3-4204-8747-159be73a76f6.png" width="900" height="400">
+
+After that, I click on the "Authorize" button and enter my token so that "Bearer" appears at the beginning.
+
+<img src="https://user-images.githubusercontent.com/96787308/165601351-33d5253f-7955-459d-8055-1cb3676c1957.png" width="900" height="400">
+
+Now I can access my methods in my "Reservation" controls, which are closed to outside access.
+
+<img src="https://user-images.githubusercontent.com/96787308/165601894-f6a662c1-e3cb-49cb-a68f-f2c93cdc2bcb.png" width="900" height="400">
