@@ -700,3 +700,5 @@ builder.Services.AddSwaggerGen(options =>
     public class ReservationsController : ControllerBase
 
 ```
+Now let's see how it is tested.I first got all the users by making a get list and copied their id.Then I entered my username and password in the "POST/api/User/authenticate" and got my token.
+<img src="https://user-images.githubusercontent.com/96787308/165599747-e47a3e61-cfab-41cf-a81e-974f85d6403e.png" width="500" height="300">
