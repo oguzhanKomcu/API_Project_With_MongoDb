@@ -577,13 +577,14 @@ builder.Services.AddSwaggerGen(options =>
             Url = new Uri("http://opensource.org/licenses/MIT")
         }
     });
-    options.AddSecurityDefinition("JWT", new OpenApiSecurityScheme() // <= 
+  options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() 
     {
         Description = "JWT Authentication header using token",
-        Name = "Authentication",
+        Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "JWT"
+        Scheme = "Bearer",
+        
     });    
     options.AddSecurityRequirement(new OpenApiSecurityRequirement()
       {
@@ -593,16 +594,17 @@ builder.Services.AddSwaggerGen(options =>
             Reference = new OpenApiReference
               {
                 Type = ReferenceType.SecurityScheme,
-                Id = "JWT"
+                Id = "Bearer"
               },
-              Scheme = "JWT",
-              Name = "JWT",
+              Scheme = "Bearer",
+              Name = "Bearer",
               In = ParameterLocation.Header,
 
             },
             new List<string>()
           }
         });
+
 
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
