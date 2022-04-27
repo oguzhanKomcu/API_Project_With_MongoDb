@@ -711,4 +711,6 @@ After that, I click on the "Authorize" button and enter my token so that "Bearer
 
 <img src="https://user-images.githubusercontent.com/96787308/165601351-33d5253f-7955-459d-8055-1cb3676c1957.png" width="900" height="400">
 
+Now I can access my methods in my "Reservation" controls, which are closed to outside access.
 
+<img src="https://user-images.githubusercontent.com/96787308/165601894-f6a662c1-e3cb-49cb-a68f-f2c93cdc2bcb.png" width="900" height="400">
