@@ -2,7 +2,7 @@
 
 ## MongoDB Installation and Usage
 
-- Since I want to keep my database locally, I downloaded the [Community Server](https://www.mongodb.com/try/download/community). file from MongoDb's own site. Database operations can be done by subscribing to the cloud server, if desired.
+- Since I want to keep my database locally, I downloaded the [Community Server](https://www.mongodb.com/try/download/community) file from MongoDb's own site. Database operations can be done by subscribing to the cloud server, if desired.
 
 - MongoDb can also be used directly with the CMD line if desired. However, if you want an interface like Sql, you need to download [ MongoDB Compass](https://www.mongodb.com/products/compass).
 
